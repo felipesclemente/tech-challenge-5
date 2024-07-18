@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="img/favicon-supermanager.png" type="image/x-icon">
+  <title>Super manager</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="css/fontawesome.min.css">
+  
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+
+  <!-- Estilo -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-dark text-light">
+  <header id="Header">
+    <nav class="navbar navbar-expand-lg navbar-main">
+      <div class="container">
+        <div class="col-6 col-lg-2">
+          <a class="navbar-brand" href="index.html"><img class="logo-header" width="120" height="78" src="img/logo-supermanager.svg" alt="Super Manager"></a>
+        </div>
+        <div class="col-6 d-lg-none text-end">
+          <button class="navbar-toggler" title="Expandir" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarMain" aria-controls="navbarMain">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+  
+        <div class="col-12 col-lg-6">
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="navbarMain">
+            <div class="offcanvas-header justify-content-end">
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <ul class="navbar-nav justify-content-lg-center align-items-lg-center flex-grow-1 gap-lg-2 w-100">
+                <li class="nav-item"><a class=" nav-link" href="index.html">Início</a></li>
+                <li class="nav-item"><a class=" nav-link" href="#">Sobre</a></li>
+              </ul>
+            </div>
+          </div>  
+      </div>
+    </nav>
+    
+  </header>
+
+
+
+
+   <!--Feedback de carregamento (loading)-->
+  <div id="loading">
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="container py-5">
+    <!--Logotipo do TodoList-->
+    <!-- <div class="center">
+      <img class="logo-central" src="img/logo-supermanager.svg" width="400" height="261">
+    </div>    -->
+
+    <!--Conteúdo destinado para usuários não autenticados-->
+    <div id="auth" class="center">
+      <!--Formulário de autenticação-->
+      <form id="authForm">
+        <h3 id="authFormTitle">Acesse a sua conta para continuar</h3>
+
+        <div class="mb-3">
+          <label lass="form-label" for="email">E-mail: </label>
+          <input class="form-control" type="email" placeholder="E-mail" id="email">
+        </div>
+        <div class="mb-3">
+          <label lass="form-label" for="password">Senha: </label>
+          <input class="form-control" type="password" placeholder="Senha" id="password">
+        </div>
+
+        <button type="submit" id="submitAuthForm" class="btn btn-primary">Acessar</button>
+      </form>
+
+    <div class="d-flex flex-column gap-2 mt-3">
+        <!--Possibilita a redefiniação de senha-->
+        <p id="passwordReset">
+          Esqueceu a senha? <button class="btn btn-warning" onclick="sendPasswordResetEmail()">Redefinir minha senha</button>
+        </p>
+
+        <!--Alternar o fomulário de autenticação para o cadastro de novas contas-->
+        <p id="register">
+          Não possui uma conta? <button onclick="toggleToRegister()" class="btn btn-success">Cadastrar uma nova conta</button>
+        </p>
+
+        <!--Alternar o fomulário de autenticação para o acesso de contas já existentes-->
+        <p id="access" class="startHidden">
+          Já possui uma conta? <button onclick="toggleToAccess()" class="btn btn-primary">Acesse a sua conta</button>
+        </p>
+
+        <!--Outros provedores de autenticação-->
+        <div>
+          Ou acesse usando:
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="login-with-btn login-with-google-btn" onclick="signInWithGoogle()">
+              Entrar com Google
+            </button>
+            <button type="button" class="login-with-btn login-with-github-btn" onclick="signInWithGitHub()">
+              Entrar com Github
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Conteúdo destinado para usuários autenticados-->
+    <div id="userContent" class="startHidden">
+      <!-- <hr> -->
+      <h3>Informações do usuário:</h3>
+      <div id="userInfo" class="d-flex flex-wrap align-items-center gap-5 mt-4">
+        <div class="d-flex align-items-center">
+          <img id="userImg" width="100" height="100" loading="lazy">
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <p id="userName"><strong>Nome:</strong> <span></span></p>
+          <p id="userEmail"><strong>Email:</strong> <span></span></p>
+          <p id="emailVerified"></p>
+          <div id="sendEmailVerificationDiv">
+            <button class="btn btn-primary" onclick="sendEmailVerification()">Verificar e-mail</button>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-primary" onclick="updateUserName()">Atualizar meu nome</button>
+            <button class="btn btn-primary" onclick="signOut()">Sair</button>
+            <button class="btn btn-danger" onclick="deleteUserAccount()">Excluir minha conta</button>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <!--Lista de tarefas do usuario-->
+      <div id="taskList">
+        <h3 id="taskCount">Carregando tarefas...</h3>
+        <div class="mb-3">
+          <label lass="form-label" for="search">Buscar: </label>
+          <input class="form-control" type="text" placeholder="Buscar" id="search">
+        </div>
+        <ul id="ulTaskList" class="list-unstyled d-flex flex-column gap-2"></ul>
+      </div>
+
+      <hr>
+
+      <div class="center">
+        <!--Formulario de tarefas-->
+        <form id="taskForm" class="row g-3">
+          <h3 id="taskFormTitle" class="col-12">Adicionar tarefa</h3>
+
+          <div class="col-12">
+            <label lass="form-label" for="name">Tarefa: </label>
+            <input class="form-control" type="text" id="name" name="name" placeholder="Tarefa">
+          </div>
+          <div class="col-12">
+            <label lass="form-label" for="desc">Descrição da Tarefa: </label>
+            <input class="form-control" type="text" id="desc" name="desc" placeholder="Descrição da tarefa">
+          </div>
+          <div class="col-12 col-md-4">
+            <label lass="form-label" for="prazo">Prazo: </label>
+            <input class="form-control" type="text" id="prazo" name="prazo" placeholder="Prazo">
+          </div>
+          <div class="col-12 col-md-4">
+            <label lass="form-label" for="tempo">Tempo estimado: </label>
+            <input class="form-control" type="text" id="tempo" name="tempo" placeholder="Tempo estimado">
+          </div>
+          <div class="col-12 col-md-4">
+            <label lass="form-label" for="file">Figura: </label>
+            <input class="form-control" type="file" id="file" name="file" accept="image/*" >
+          </div>
+          <div class="col-12">
+          <button class="btn btn-success" type="submit" id="submitTaskForm">Adicionar tarefa</button>
+          </div>
+        </form>
+
+
+        <div id = "cancelUpdateTask" class="startHidden">
+          <button class="btn btn-success" onclick="confirmTaskUpdate()">Confirmar modificação</button>
+          <button class="btn btn-danger" onclick="resetTaskForm()">Cancelar modificação</button>
+        </div>
+
+        <div id="progressFeedback" class="startHidden">
+          <progress max = "100" id = "progress"></progress>
+          <button class="btn btn-success" id="playPauseBtn">Pausar</button>
+          <button class="btn btn-danger" id="cancelBtn">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <footer>
+    <div class="main-footer">
+      <div class="container d-flex flex-wrap gap-4 gap-md-0">
+        <div class="col-12 col-md-4 pe-md-2 pe-lg-5">
+          <p><a href="index.html"><img class="logo-footer" width="180" height="117" src="img/logo-supermanager.svg" alt="Super Manager" loading="lazy"></a></p>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate corporis asperiores eius perspiciatis. Blanditiis nam animi porro unde optio totam non esse commodi fugit itaque, repellat explicabo possimus ducimus praesentium.</p>
+        </div>
+
+        <!-- A fazer mais paginas -->
+        <div class="col-12 col-md-4 pe-md-2">
+          <p class="h4">Menu</p>
+          <hr class="linha">
+          <ul class="list-unstyled list-footer d-flex flex-column gap-2">
+              <li><a href="index.html">Início</a></li>
+              <li><a href="#">Sobre</a></li>
+          </ul>
+        </div>
+
+        <!-- A fazer no backend -->
+        <div class="col-12 col-md-4 pe-md-2">
+          <p class="h4">Conta</p>
+          <hr class="linha">
+          <ul class="list-unstyled list-footer d-flex flex-column gap-2">
+              <li><a href="#">Minha conta</a></li>
+              <li><a href="#">Sair</a></li>
+          </ul>
+
+        </div>
+      </div>
+  
+    </div>
+  
+  
+    <div class="creditos">
+      <div class="container d-flex flex-wrap align-items-center flex-column gap-3 flex-lg-row gap-lg-0 justify-content-center text-center text-lg-start">
+        <div class="col-12 col-lg-6">
+          <strong>Supermanager</strong>&nbsp;| Copyright © 2024&nbsp; Todos os direitos Reservados.
+        </div>
+        <div class="col-12 col-lg-6 d-flex justify-content-center justify-content-lg-end align-items-center">
+          <span class="me-2">Desenvolvido pelo <b>GRUPO D</b> da</span>
+          <a href="https://fiap.com.br/" target="_blank"><img src="img/logo-fiap.svg" class="logo-fiap-footer" alt="FIAP" title="FIAP" width="50" height="20"></a>
+        </div>
+      </div>
+    </div>
+  
+  </footer>
+
+
+
+
+
+  <!--Recursos do Firebase-->
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+
+
+  
+  <!--Nossa programação em JavaScript-->
+  <script src="js/firebase.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/task.js"></script>
+
+  <!-- Bootstrap -->
+  <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
